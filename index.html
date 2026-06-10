@@ -1482,14 +1482,19 @@
 let _sb = null;
 
 async function initAuth() {
+  showLoginScreen();
+
   let config = {};
   try {
     const r = await fetch('/api/config');
     config = await r.json();
-  } catch { /* servidor indisponível */ }
+  } catch {
+    showLoginScreen('Não foi possível conectar ao servidor.');
+    return;
+  }
 
   if (!config.supabase_url) {
-    hideOverlay();
+    showLoginScreen('Autenticação não configurada no servidor.');
     return;
   }
 
@@ -1549,6 +1554,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
   const btn      = document.getElementById('login-btn');
 
   if (!email || !password) { errorEl.textContent = 'Preencha e-mail e senha.'; return; }
+  if (!_sb) { errorEl.textContent = 'Servidor indisponível. Recarregue a página.'; return; }
 
   btn.disabled = true;
   btn.textContent = 'Entrando…';
