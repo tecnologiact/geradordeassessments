@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="pt-BR" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Links · Assessments Voxa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #EE222B;
+    --red-dark: #C91920;
+    --black: #1d1d1b;
+    --white: #ffffff;
+    --lime: #b0e600;
+    --gray-100: #F5F5F4;
+    --gray-200: #EAEAE8;
+    --gray-300: #D6D5D2;
+    --gray-400: #A8A7A3;
+    --gray-600: #6B6A67;
+    --gray-800: #3A3937;
+    --success: #00a85c;
+    --link: #004fce;
+    --radius: 8px;
+    --radius-sm: 4px;
+  }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--gray-100);
+    color: var(--black);
+    min-height: 100vh;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: var(--black);
+    padding: 0 40px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ct-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ct-logo-icon { width: 28px; height: 28px; }
+  .ct-logo-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  /* ── Lang switcher ── */
+  .lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 6px;
+    padding: 4px;
+  }
+
+  .lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-400);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transition: all .15s;
+  }
+
+  .lang-btn:hover { color: var(--white); }
+
+  .lang-btn.active {
+    background: var(--red);
+    color: var(--white);
+  }
+
+  .lang-flag { font-size: 16px; line-height: 1; }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--white);
+    border-bottom: 3px solid var(--red);
+    padding: 48px 40px 40px;
+  }
+
+  .hero-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 48px;
+  }
+
+  .hero-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 12px;
+  }
+
+  .hero-title {
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--black);
+    letter-spacing: -.02em;
+    margin-bottom: 16px;
+  }
+
+  .hero-title em { font-style: normal; color: var(--red); }
+
+  .hero-desc {
+    font-size: 15px;
+    color: var(--gray-600);
+    line-height: 1.65;
+    max-width: 480px;
+  }
+
+  .hero-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex-shrink: 0;
+    min-width: 260px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .step-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 4px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .step-num {
+    width: 24px; height: 24px;
+    background: var(--red);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step-text { font-size: 13px; color: var(--gray-800); line-height: 1.5; }
+  .step-text strong { font-weight: 700; color: var(--black); display: block; margin-bottom: 1px; }
+
+  /* ── Main ── */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 40px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-header-icon {
+    width: 32px; height: 32px;
+    background: var(--red);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .card-title { font-size: 13px; font-weight: 700; color: var(--black); letter-spacing: -.01em; }
+  .card-subtitle { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+  .card-body { padding: 20px 24px; }
+
+  /* ── Groups / chips ── */
+  .group-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin: 16px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .group-label:first-child { margin-top: 0; }
+
+  .chip-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+
+  .chip {
+    padding: 7px 14px;
+    border-radius: 4px;
+    border: 1.5px solid var(--gray-200);
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .12s;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .chip:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+  .chip.active { background: var(--red); border-color: var(--red); color: var(--white); font-weight: 700; }
+
+  .divider { border: none; border-top: 1px solid var(--gray-200); margin: 20px 0; }
+
+  /* ── Qty ── */
+  .qty-wrapper { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .qty-desc { font-size: 13px; color: var(--gray-600); line-height: 1.4; }
+  .qty-control { display: flex; align-items: center; flex-shrink: 0; }
+
+  .qty-btn {
+    width: 40px; height: 40px;
+    border: 1.5px solid var(--gray-200);
+    background: var(--gray-100);
+    color: var(--black);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .1s;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1;
+  }
+  .qty-btn:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+  .qty-btn:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .qty-btn:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: var(--white); }
+  .qty-btn:disabled { opacity: .3; cursor: default; }
+
+  .qty-display {
+    width: 56px; height: 40px;
+    border-top: 1.5px solid var(--gray-200);
+    border-bottom: 1.5px solid var(--gray-200);
+    background: var(--white);
+    text-align: center;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+  .field-label:first-child { margin-top: 0; }
+
+  /* ── Gen button ── */
+  .gen-btn {
+    width: 100%;
+    padding: 14px 20px;
+    margin-top: 24px;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .gen-btn:hover:not(:disabled) { background: var(--red-dark); }
+  .gen-btn:disabled { opacity: .35; cursor: default; }
+
+  /* ── Results ── */
+  .results-card {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .results-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--black);
+  }
+
+  .results-title-group { display: flex; align-items: center; gap: 10px; }
+
+  .results-dot {
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+  }
+  .results-dot.active { background: var(--lime); box-shadow: 0 0 0 3px rgba(176,230,0,.25); }
+
+  .results-title { font-size: 13px; font-weight: 700; color: var(--white); letter-spacing: .04em; text-transform: uppercase; }
+  .results-count { font-size: 11px; color: var(--gray-400); font-family: 'Roboto Mono', monospace; margin-left: 2px; }
+
+  .copy-all-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1.5px solid var(--gray-800);
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-400);
+    cursor: pointer;
+    transition: all .15s;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .copy-all-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+  .links-container { flex: 1; overflow-y: auto; }
+
+  .link-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--gray-200);
+    transition: background .1s;
+  }
+  .link-row:last-child { border-bottom: none; }
+  .link-row:hover { background: var(--gray-100); }
+
+  .link-num { font-family: 'Roboto Mono', monospace; font-size: 11px; color: var(--gray-400); text-align: right; font-weight: 500; }
+
+  .link-url {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: var(--link);
+    word-break: break-all;
+    text-decoration: none;
+    line-height: 1.5;
+  }
+  .link-url:hover { text-decoration: underline; }
+
+  .copy-link-btn {
+    padding: 5px 12px;
+    background: transparent;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-400);
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .copy-link-btn:hover { border-color: var(--red); color: var(--red); }
+  .copy-link-btn.copied { color: var(--success); border-color: var(--success); }
+
+  /* ── Paste flow ── */
+  .paste-instructions {
+    font-size: 13px;
+    color: var(--gray-600);
+    background: #fffbe6;
+    border: 1px solid #f0d060;
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .paste-instructions strong { color: var(--black); }
+
+  .paste-block { margin-bottom: 16px; }
+
+  .paste-block-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+  }
+
+  .paste-area {
+    width: 100%;
+    height: 90px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: var(--black);
+    background: var(--gray-100);
+    resize: vertical;
+    outline: none;
+    transition: border-color .15s;
+    line-height: 1.5;
+  }
+  .paste-area:focus { border-color: var(--red); background: var(--white); }
+
+  .paste-error {
+    font-size: 11px;
+    color: var(--red);
+    margin-top: 4px;
+    min-height: 16px;
+    font-weight: 500;
+  }
+
+  .parse-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 4px;
+    background: var(--black);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transition: opacity .15s;
+  }
+  .parse-btn:hover { opacity: .8; }
+
+  /* ── Open URL row ── */
+  .open-url-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--gray-100);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+  }
+
+  .open-url-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--black);
+  }
+
+  .open-url-btn {
+    padding: 8px 16px;
+    background: var(--black);
+    color: var(--white);
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: opacity .15s;
+  }
+
+  .open-url-btn:hover { opacity: .75; }
+
+  /* ── Result group header ── */
+  .group-result-header {
+    padding: 8px 24px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    background: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    border-top: 1px solid var(--gray-200);
+  }
+  .group-result-header:first-child { border-top: none; }
+
+  /* ── Empty ── */
+  .empty-state {
+    padding: 60px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .empty-icon {
+    width: 56px; height: 56px;
+    background: var(--gray-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+  .empty-title { font-size: 15px; font-weight: 700; color: var(--gray-800); }
+  .empty-desc { font-size: 13px; color: var(--gray-400); line-height: 1.6; max-width: 240px; }
+
+  /* ── Talkia section ── */
+  .talkia-section {
+    max-width: 960px;
+    margin: 0 auto 0;
+    padding: 0 40px 60px;
+  }
+
+  .talkia-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .talkia-header {
+    background: var(--black);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .talkia-header-icon {
+    width: 32px; height: 32px;
+    background: var(--red);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+  }
+
+  .talkia-header-info {}
+  .talkia-header-title { font-size: 13px; font-weight: 700; color: var(--white); letter-spacing: .04em; text-transform: uppercase; }
+  .talkia-header-subtitle { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+  .talkia-body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .talkia-channel { display: flex; flex-direction: column; gap: 10px; }
+
+  .talkia-channel-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-200);
+    margin-bottom: 2px;
+  }
+
+  .talkia-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    color: var(--link);
+    word-break: break-all;
+    text-decoration: none;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    line-height: 1.5;
+    transition: border-color .15s;
+  }
+  .talkia-link:hover { border-color: var(--link); text-decoration: underline; }
+
+  .talkia-copy-link-btn {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-400);
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    align-self: flex-start;
+    flex-shrink: 0;
+  }
+  .talkia-copy-link-btn:hover { border-color: var(--red); color: var(--red); }
+  .talkia-copy-link-btn.copied { color: var(--success); border-color: var(--success); }
+
+  .talkia-link-row { display: flex; align-items: flex-start; gap: 8px; }
+
+  .talkia-steps { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+
+  .talkia-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.55;
+  }
+
+  .talkia-step-dot {
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .talkia-notice {
+    grid-column: 1 / -1;
+    background: #fffbe6;
+    border: 1px solid #f0d060;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--gray-800);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .talkia-section { padding: 0 20px 60px; }
+    .talkia-body { grid-template-columns: 1fr; }
+  }
+
+  /* ── Footer ── */
+  .footer-bar {
+    background: var(--white);
+    border-top: 1px solid var(--gray-200);
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-text { font-size: 12px; color: var(--gray-400); }
+  .footer-voxa { font-size: 12px; color: var(--gray-400); display: flex; align-items: center; gap: 6px; }
+  .footer-voxa span { color: var(--red); font-weight: 700; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .topbar { padding: 0 20px; height: auto; flex-wrap: wrap; gap: 8px; padding: 10px 20px; }
+    .hero { padding: 32px 20px; }
+    .hero-inner { flex-direction: column; gap: 28px; }
+    .hero-steps { min-width: unset; }
+    .main { grid-template-columns: 1fr; padding: 24px 20px 60px; }
+    .results-card { grid-column: 1; grid-row: auto; }
+    .hero-title { font-size: 28px; }
+    .footer-bar { padding: 14px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="ct-logo">
+    <svg class="ct-logo-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="28" height="28" rx="4" fill="#EE222B"/>
+      <text x="14" y="20" font-family="'Roboto', sans-serif" font-size="16" font-weight="900" fill="white" text-anchor="middle">C</text>
+    </svg>
+    <span class="ct-logo-text">Cia de Talentos</span>
+  </div>
+
+  <!-- Language switcher -->
+  <div class="lang-switcher" role="group" aria-label="Idioma da interface">
+    <button class="lang-btn active" id="lang-pt" onclick="setLang('pt')">PT-BR</button>
+    <button class="lang-btn" id="lang-es" onclick="setLang('es')">ES</button>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <p class="hero-label" data-i18n="hero-label">Produto · Voxa Assessments</p>
+      <h1 class="hero-title" data-i18n="hero-title">Gerador de<br><em>links de degustação</em></h1>
+      <p class="hero-desc" data-i18n="hero-desc">
+        Ferramenta interna para criar links de acesso rápido aos assessments da Cia de Talentos. Use para demonstrações com clientes, validações de produto ou testes internos.
+      </p>
+    </div>
+    <div class="hero-steps">
+      <p class="step-title" data-i18n="steps-title">Como usar</p>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <strong data-i18n="step1-title">Escolha o assessment</strong>
+          <span data-i18n="step1-desc">Selecione o produto e o idioma desejado</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <strong data-i18n="step2-title">Defina a quantidade</strong>
+          <span data-i18n="step2-desc">Escolha entre 2 e 10 links</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <strong data-i18n="step3-title">Gere os links</strong>
+          <span data-i18n="step3-desc">Clique em Abrir página, selecione tudo no que abrir (Ctrl+A), copie (Ctrl+C), volte aqui e cole no campo indicado</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">
+          <strong data-i18n="step4-title">Processe e compartilhe</strong>
+          <span data-i18n="step4-desc">Clique em Processar para ver e copiar os links</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Config card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1" y="1" width="6" height="6" rx="1.5" fill="white"/>
+          <rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".5"/>
+          <rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".5"/>
+          <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".25"/>
+        </svg>
+      </div>
+      <div>
+        <div class="card-title" data-i18n="card-title">Configurar assessment</div>
+        <div class="card-subtitle" data-i18n="card-subtitle">Produto e idioma de aplicação</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <p class="group-label" data-i18n="group-culturama-candidato">Culturama — Candidato</p>
+      <div class="chip-grid">
+        <div class="chip active" data-key="CULTURAMA_BR">🇧🇷 Português</div>
+        <div class="chip" data-key="CULTURAMA_EN">🇺🇸 Inglês</div>
+        <div class="chip" data-key="CULTURAMA_ES">🇪🇸 Espanhol</div>
+      </div>
+
+      <p class="group-label" data-i18n="group-culturama-gestor">Culturama — Gestor</p>
+      <div class="chip-grid">
+        <div class="chip" data-key="CULTURAMA_GESTOR_BR">🇧🇷 Português</div>
+        <div class="chip" data-key="CULTURAMA_GESTOR_EN">🇺🇸 Inglês</div>
+        <div class="chip" data-key="CULTURAMA_GESTOR_ES">🇪🇸 Espanhol</div>
+      </div>
+
+      <p class="group-label">Solu</p>
+      <div class="chip-grid">
+        <div class="chip" data-key="SOLU_BR">🇧🇷 Português</div>
+        <div class="chip" data-key="SOLU_EN">🇺🇸 Inglês</div>
+        <div class="chip" data-key="SOLU_ES">🇪🇸 Espanhol</div>
+      </div>
+
+      <p class="group-label">EF</p>
+      <div class="chip-grid">
+        <div class="chip" data-key="EF">🌐 Global</div>
+      </div>
+
+      <p class="group-label">Recognita</p>
+      <div class="chip-grid">
+        <div class="chip" data-key="RECOGNITA_PT" data-provider="recognita" data-lang="pt">🇧🇷 Português</div>
+        <div class="chip" data-key="RECOGNITA_EN" data-provider="recognita" data-lang="en">🇺🇸 Inglês</div>
+        <div class="chip" data-key="RECOGNITA_ES" data-provider="recognita" data-lang="es">🇪🇸 Espanhol</div>
+      </div>
+
+      <p class="group-label">Volt</p>
+      <div class="chip-grid">
+        <div class="chip" data-key="VOLT_BR">🇧🇷 Português</div>
+        <div class="chip" data-key="VOLT_EN">🇺🇸 Inglês</div>
+        <div class="chip" data-key="VOLT_ES">🇪🇸 Espanhol</div>
+      </div>
+
+      <hr class="divider">
+
+      <p class="field-label" data-i18n="qty-label">Quantidade de links</p>
+      <div class="qty-wrapper">
+        <p class="qty-desc" data-i18n="qty-desc">Cada link gera uma sessão única de acesso ao assessment selecionado.</p>
+        <div class="qty-control">
+          <button class="qty-btn" id="btn-minus" aria-label="Diminuir">−</button>
+          <div class="qty-display" id="qty-display" aria-live="polite">3</div>
+          <button class="qty-btn" id="btn-plus" aria-label="Aumentar">+</button>
+        </div>
+      </div>
+
+      <button class="gen-btn" id="gen-btn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2L10.5 6.5H14L10.5 9L12 13.5L8 11L4 13.5L5.5 9L2 6.5H5.5L8 2Z" fill="currentColor"/>
+        </svg>
+        <span data-i18n="gen-btn">Gerar links</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Results card -->
+  <div class="results-card">
+    <div class="results-header">
+      <div class="results-title-group">
+        <div class="results-dot" id="results-dot"></div>
+        <span class="results-title" data-i18n="results-title">Links gerados</span>
+        <span class="results-count" id="results-count"></span>
+      </div>
+      <button class="copy-all-btn" id="copy-all-btn" style="display:none" data-i18n="copy-all">Copiar todos</button>
+    </div>
+    <div class="links-container" id="links-container">
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="#A8A7A3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="#A8A7A3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <p class="empty-title" data-i18n="empty-title">Nenhum link gerado</p>
+        <p class="empty-desc" data-i18n="empty-desc">Selecione um assessment e clique em <strong data-i18n="gen-btn">Gerar links</strong> para começar.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Talkia section -->
+<div class="talkia-section" id="talkia-section">
+  <div class="talkia-card">
+    <div class="talkia-header">
+      <div class="talkia-header-icon">🎙️</div>
+      <div class="talkia-header-info">
+        <div class="talkia-header-title">Talkia</div>
+        <div class="talkia-header-subtitle" id="talkia-subtitle">Instruções padronizadas para envio ao cliente</div>
+      </div>
+    </div>
+    <div class="talkia-body" id="talkia-body">
+      <!-- rendered by JS based on lang -->
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-bar">
+  <span class="footer-text" data-i18n="footer-text">Ferramenta de uso interno — Cia de Talentos · 2026</span>
+  <span class="footer-voxa">Powered by <span>Voxa</span></span>
+</div>
+
+<script>
+  // ── i18n ──────────────────────────────────────────────
+  const i18n = {
+    pt: {
+      'hero-label':                  'Produto · Voxa Assessments',
+      'hero-title':                  'Gerador de<br><em>links de degustação</em>',
+      'hero-desc':                   'Ferramenta interna para criar links de acesso rápido aos assessments da Cia de Talentos. Use para demonstrações com clientes, validações de produto ou testes internos.',
+      'steps-title':                 'Como usar',
+      'step1-title':                 'Escolha o assessment',
+      'step1-desc':                  'Selecione o produto e o idioma desejado',
+      'step2-title':                 'Defina a quantidade',
+      'step2-desc':                  'Escolha entre 2 e 10 links',
+      'step3-title':                 'Gere os links',
+      'step3-desc':                  'Clique em Abrir página, selecione tudo no que abrir (Ctrl+A), copie (Ctrl+C), volte aqui e cole no campo indicado',
+      'step4-title':                 'Processe e compartilhe',
+      'step4-desc':                  'Clique em Processar para ver e copiar os links',
+      'card-title':                  'Configurar assessment',
+      'card-subtitle':               'Produto e idioma de aplicação',
+      'group-culturama-candidato':   'Culturama — Candidato',
+      'group-culturama-gestor':      'Culturama — Gestor',
+      'qty-label':                   'Quantidade de links',
+      'qty-desc':                    'Cada link gera uma sessão única de acesso ao assessment selecionado.',
+      'gen-btn':                     'Gerar links',
+      'results-title':               'Links gerados',
+      'copy-all':                    'Copiar todos',
+      'copy-link':                   'Copiar',
+      'copied':                      '✓ Copiado',
+      'copied-all':                  '✓ Copiados!',
+      'empty-title':                 'Nenhum link gerado',
+      'empty-desc':                  'Selecione um assessment e clique em',
+      'footer-text':                 'Ferramenta de uso interno — Cia de Talentos · 2026',
+      'link-count':                  (n) => `· ${n} link${n > 1 ? 's' : ''}`,
+    },
+    es: {
+      'hero-label':                  'Producto · Voxa Assessments',
+      'hero-title':                  'Generador de<br><em>links de degustación</em>',
+      'hero-desc':                   'Herramienta interna para crear links de acceso rápido a los assessments de Cia de Talentos. Úsala para demostraciones con clientes, validaciones de producto o pruebas internas.',
+      'steps-title':                 'Cómo usar',
+      'step1-title':                 'Elige el assessment',
+      'step1-desc':                  'Selecciona el producto y el idioma deseado',
+      'step2-title':                 'Define la cantidad',
+      'step2-desc':                  'Elige entre 2 y 10 links',
+      'step3-title':                 'Genera los links',
+      'step3-desc':                  'Haz clic en Abrir página, selecciona todo (Ctrl+A), copia (Ctrl+C), vuelve aquí y pega en el campo indicado',
+      'step4-title':                 'Procesa y comparte',
+      'step4-desc':                  'Haz clic en Procesar para ver y copiar los links',
+      'card-title':                  'Configurar assessment',
+      'card-subtitle':               'Producto e idioma de aplicación',
+      'group-culturama-candidato':   'Culturama — Candidato',
+      'group-culturama-gestor':      'Culturama — Gestor',
+      'qty-label':                   'Cantidad de links',
+      'qty-desc':                    'Cada link genera una sesión única de acceso al assessment seleccionado.',
+      'gen-btn':                     'Generar links',
+      'results-title':               'Links generados',
+      'copy-all':                    'Copiar todos',
+      'copy-link':                   'Copiar',
+      'copied':                      '✓ Copiado',
+      'copied-all':                  '✓ ¡Copiados!',
+      'empty-title':                 'Ningún link generado',
+      'empty-desc':                  'Selecciona un assessment y haz clic en',
+      'footer-text':                 'Herramienta de uso interno — Cia de Talentos · 2026',
+      'link-count':                  (n) => `· ${n} link${n > 1 ? 's' : ''}`,
+    }
+  };
+
+  let currentLang = 'pt';
+
+  function t(key) {
+    const val = i18n[currentLang][key];
+    return typeof val === 'function' ? val : (val || key);
+  }
+
+  function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      const val = i18n[currentLang][key];
+      if (typeof val === 'string') {
+        if (val.includes('<')) el.innerHTML = val;
+        else el.textContent = val;
+      }
+    });
+
+    // Update copy-all button text if visible
+    const copyAllBtn = document.getElementById('copy-all-btn');
+    if (copyAllBtn.style.display !== 'none') {
+      copyAllBtn.textContent = t('copy-all');
+    }
+
+    // Update all copy-link buttons
+    document.querySelectorAll('.copy-link-btn:not(.copied)').forEach(btn => {
+      btn.textContent = t('copy-link');
+    });
+
+    // Update empty-desc (has nested strong)
+    const emptyDescEl = document.querySelector('.empty-desc');
+    if (emptyDescEl) {
+      emptyDescEl.innerHTML = `${t('empty-desc')} <strong>${t('gen-btn')}</strong> para ${currentLang === 'pt' ? 'começar.' : 'empezar.'}`;
+    }
+
+    document.documentElement.lang = currentLang === 'pt' ? 'pt-BR' : 'es';
+  }
+
+  function setLang(lang) {
+    currentLang = lang;
+    document.getElementById('lang-pt').classList.toggle('active', lang === 'pt');
+    document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+    applyTranslations();
+
+    // Update count label if results are showing
+    const count = document.getElementById('results-count');
+    if (count.textContent) {
+      const n = qty;
+      count.textContent = t('link-count')(n);
+    }
+    renderTalkia(lang);
+  }
+
+  // ── Assessment chips ──────────────────────────────────
+  let qty = 3;
+
+  // ── Single-select chips ──────────────────────────────
+  const chips = document.querySelectorAll('.chip');
+
+  let selectedAssessment = { key: 'CULTURAMA_BR', provider: 'voxa', lang: null };
+
+  function syncChipUI() {
+    chips.forEach(c => c.classList.toggle('active', c.dataset.key === selectedAssessment.key));
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      selectedAssessment = {
+        key: chip.dataset.key,
+        provider: chip.dataset.provider || 'voxa',
+        lang: chip.dataset.lang || null
+      };
+      syncChipUI();
+    });
+  });
+
+  syncChipUI();
+
+  async function fetchLinks() {
+    const a      = selectedAssessment;
+    const params = new URLSearchParams({ provider: a.provider, assessment: a.key, amount: qty });
+    if (a.lang) params.set('lang', a.lang);
+    const resp = await fetch('/api/links?' + params);
+    const body = await resp.json();
+    if (!resp.ok) throw new Error(body.error || 'Erro desconhecido');
+    return body.links;
+  }
+
+  // ── Quantity ─────────────────────────────────────────
+  const qtyDisplay = document.getElementById('qty-display');
+  const btnMinus = document.getElementById('btn-minus');
+  const btnPlus = document.getElementById('btn-plus');
+
+  function updateQtyBtns() {
+    btnMinus.disabled = qty <= 2;
+    btnPlus.disabled = qty >= 10;
+  }
+
+  btnMinus.addEventListener('click', () => {
+    if (qty > 2) { qty--; qtyDisplay.textContent = qty; updateQtyBtns(); }
+  });
+  btnPlus.addEventListener('click', () => {
+    if (qty < 10) { qty++; qtyDisplay.textContent = qty; updateQtyBtns(); }
+  });
+  updateQtyBtns();
+
+  // ── Generate ──────────────────────────────────────────
+  function getLabelForAssessment(key) {
+    const el = document.querySelector(`.chip[data-key="${key}"]`);
+    if (!el) return key;
+    // Get group label above this chip's chip-grid
+    let node = el.closest('.chip-grid').previousElementSibling;
+    const group = node ? node.textContent.trim() : '';
+    return group + ' · ' + el.textContent.trim();
+  }
+
+  function renderGroups(groups, allLinks) {
+    const container = document.getElementById('links-container');
+    const copyAllBtn = document.getElementById('copy-all-btn');
+    const dot = document.getElementById('results-dot');
+    const count = document.getElementById('results-count');
+
+    container.innerHTML = '';
+    dot.classList.add('active');
+    const total = allLinks.length;
+    count.textContent = t('link-count')(total);
+
+    groups.forEach(({ label, links }) => {
+      // Group header
+      const header = document.createElement('div');
+      header.className = 'group-result-header';
+      header.textContent = label;
+      container.appendChild(header);
+
+      links.forEach((link, i) => {
+        const row = document.createElement('div');
+        row.className = 'link-row';
+        row.innerHTML = `
+          <span class="link-num">${String(i + 1).padStart(2, '0')}</span>
+          <a class="link-url" href="${link}" target="_blank" rel="noopener">${link}</a>
+          <button class="copy-link-btn">${t('copy-link')}</button>
+        `;
+        const copyBtn = row.querySelector('.copy-link-btn');
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(link).then(() => {
+            copyBtn.textContent = t('copied');
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+              copyBtn.textContent = t('copy-link');
+              copyBtn.classList.remove('copied');
+            }, 1800);
+          });
+        });
+        container.appendChild(row);
+      });
+    });
+
+    copyAllBtn.style.display = '';
+    copyAllBtn.textContent = t('copy-all');
+    copyAllBtn.onclick = () => {
+      navigator.clipboard.writeText(allLinks.join('\n')).then(() => {
+        copyAllBtn.textContent = t('copied-all');
+        setTimeout(() => { copyAllBtn.textContent = t('copy-all'); }, 1800);
+      });
+    };
+  }
+
+  // ── Generate ──────────────────────────────────────────
+  document.getElementById('gen-btn').addEventListener('click', async () => {
+    const label     = getLabelForAssessment(selectedAssessment.key);
+    const genBtn    = document.getElementById('gen-btn');
+    const container = document.getElementById('links-container');
+    const copyAllBtn = document.getElementById('copy-all-btn');
+
+    genBtn.disabled = true;
+    copyAllBtn.style.display = 'none';
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="#A8A7A3" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="12">
+              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+        <p class="empty-title" style="color:var(--gray-600)">Gerando links…</p>
+      </div>`;
+
+    try {
+      const links = await fetchLinks();
+      renderGroups([{ label, links }], links);
+    } catch (err) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <p class="empty-title" style="color:var(--red)">Erro ao gerar links</p>
+          <p class="empty-desc">${err.message}</p>
+        </div>`;
+    } finally {
+      genBtn.disabled = false;
+    }
+  });
+  // ── Talkia section ───────────────────────────────────
+  const talkiaData = {
+    pt: {
+      subtitle: 'Instruções padronizadas para envio ao cliente',
+      notice: 'O Talkia não gera link por demanda — utilize as instruções abaixo para orientar o cliente.',
+      channels: [
+        {
+          title: 'Computador',
+          link: 'https://www.talkia.ciadetalentos.com.br/jy?id=e85a7bd0-21e7-4d9f-ace9-38c635627caa',
+          steps: [
+            'Ao acessar o link, você precisará criar um cadastro rápido, para depois entrar com login e senha.',
+            'Uma vez dentro da plataforma, você deverá rolar a tela para baixo e clicar no botão "Iniciar" para começar a atividade.',
+            'Ela é composta por 3 perguntas que deverão ser respondidas através de gravação de voz (por isso, você deverá habilitar o microfone em seu navegador).',
+            'É recomendado que cada resposta tenha, no mínimo, 30 segundos de duração; você terá a possibilidade de regravar sua resposta antes de enviá-la, dentro do tempo total disponível.',
+          ]
+        },
+        {
+          title: 'WhatsApp',
+          link: 'https://nam02.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwa.me%2F%2B5511952134994%3Ftext%3…',
+          steps: [
+            'Importante: clique no link pelo celular; não é possível participar pelo WhatsApp Web.',
+            'Enviar a mensagem que estará na caixa de texto do seu WhatsApp para começar.',
+            'Você receberá como resposta, uma mensagem te convidando a candidatar-se à vaga "Talkia". Responda esta mensagem com um OK!',
+            'Na sequência, você precisará escrever e enviar uma mensagem com seu e-mail e ler as instruções para iniciar.',
+            'Você terá até 3 minutos para cada pergunta (entre ler, entender e enviar a resposta, através de uma mensagem de áudio).',
+          ]
+        }
+      ]
+    },
+    es: {
+      subtitle: 'Instrucciones estandarizadas para enviar al cliente',
+      notice: 'TalkIA no genera links por demanda — utiliza las instrucciones a continuación para orientar al cliente.',
+      channels: [
+        {
+          title: 'Computadora',
+          link: 'https://www.talkia.ciadetalentos.com.br/jy?id=e0f3549a-fd27-48ea-a69c-c27ebb233fde',
+          steps: [
+            'Al acceder al link, deberás crear un registro rápido y luego ingresar con tu usuario y contraseña.',
+            'Una vez dentro de la plataforma, deberás desplazarte hacia abajo en la pantalla y hacer clic en el botón "Iniciar" para comenzar la actividad.',
+            'La actividad está compuesta por 3 preguntas, que deberán responderse mediante grabación de voz (por lo tanto, deberás habilitar el micrófono en tu navegador).',
+            'Se recomienda que cada respuesta tenga una duración mínima de 30 segundos. Tendrás la posibilidad de volver a grabar tu respuesta antes de enviarla, dentro del tiempo total disponible.',
+          ]
+        },
+        {
+          title: 'WhatsApp',
+          link: 'https://i7w.me/eC4dfqCZ',
+          steps: [
+            'Importante: debes abrir el link desde el celular. No es posible participar desde WhatsApp Web.',
+            'Envía el mensaje que aparecerá en la caja de texto de tu WhatsApp para comenzar.',
+            'Recibirás una respuesta invitándote a postularte a la vacante "TalkIA". Responde ese mensaje con un OK.',
+            'Luego, deberás escribir y enviar un mensaje con tu correo electrónico y leer las instrucciones para iniciar.',
+            'Tendrás hasta 3 minutos para cada pregunta (entre leer, comprender y enviar tu respuesta mediante un mensaje de audio).',
+          ]
+        }
+      ]
+    }
+  };
+
+  function renderTalkia(lang) {
+    const data = talkiaData[lang] || talkiaData.pt;
+    document.getElementById('talkia-subtitle').textContent = data.subtitle;
+
+    const body = document.getElementById('talkia-body');
+    body.innerHTML = `
+      <div class="talkia-notice">${data.notice}</div>
+      ${data.channels.map(ch => `
+        <div class="talkia-channel">
+          <div class="talkia-channel-title">${ch.title}</div>
+          <div class="talkia-link-row">
+            <a class="talkia-link" href="${ch.link}" target="_blank" rel="noopener">${ch.link}</a>
+            <button class="talkia-copy-link-btn" onclick="
+              navigator.clipboard.writeText('${ch.link}').then(() => {
+                this.textContent = '✓';
+                this.classList.add('copied');
+                setTimeout(() => { this.textContent = 'Copiar'; this.classList.remove('copied'); }, 1800);
+              })
+            ">Copiar</button>
+          </div>
+          <div class="talkia-steps">
+            ${ch.steps.map(s => `
+              <div class="talkia-step">
+                <div class="talkia-step-dot"></div>
+                <span>${s}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    `;
+  }
+
+  // Init Talkia
+  renderTalkia(currentLang);
+</script>
+</body>
+</html>
