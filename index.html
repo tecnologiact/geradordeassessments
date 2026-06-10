@@ -1488,7 +1488,6 @@ async function initAuth() {
     config = await r.json();
   } catch { /* servidor indisponível */ }
 
-  // Se Supabase não está configurado, libera acesso (modo legado)
   if (!config.supabase_url) {
     hideOverlay();
     return;
@@ -1496,14 +1495,6 @@ async function initAuth() {
 
   _sb = window.supabase.createClient(config.supabase_url, config.supabase_anon_key);
 
-  // Verifica hub token (acesso via hub corporativo)
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('hub_token')) {
-    const redirecting = await tryHubLogin(params);
-    if (redirecting) return;
-  }
-
-  // Escuta mudanças de auth (também captura magic link de retorno do hub)
   _sb.auth.onAuthStateChange(async (event, session) => {
     if (session) {
       await onAuthenticated(session.user);
@@ -1511,26 +1502,6 @@ async function initAuth() {
       showLoginScreen();
     }
   });
-}
-
-async function tryHubLogin(params) {
-  try {
-    const r = await fetch('/api/auth/hub-login', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({
-        token: params.get('hub_token'),
-        email: params.get('hub_email'),
-        ts:    params.get('hub_ts')
-      })
-    });
-    const data = await r.json();
-    if (data.magic_link) {
-      window.location.href = data.magic_link;
-      return true;
-    }
-  } catch { /* falha silenciosa, cai no login normal */ }
-  return false;
 }
 
 async function onAuthenticated(user) {
