@@ -1371,6 +1371,7 @@
     try {
       const links = await fetchLinks();
       renderGroups([{ label, links }], links);
+      logGeneration(label);
     } catch (err) {
       container.innerHTML = `
         <div class="empty-state">
@@ -1381,6 +1382,18 @@
       genBtn.disabled = false;
     }
   });
+  function logGeneration(label) {
+    if (!_sb || !_currentUser) return;
+    _sb.from('link_generations').insert({
+      user_id:          _currentUser.id,
+      user_email:       _currentUser.email,
+      assessment_key:   selectedAssessment.key,
+      assessment_label: label,
+      provider:         selectedAssessment.provider,
+      quantity:         qty
+    });
+  }
+
   // ── Talkia section ───────────────────────────────────
   const talkiaData = {
     pt: {
@@ -1522,7 +1535,10 @@ async function onAuthenticated(user) {
   }
 }
 
+let _currentUser = null;
+
 function showApp(user) {
+  _currentUser = user;
   hideOverlay();
   const zone = document.getElementById('user-zone');
   zone.classList.add('visible');
