@@ -712,9 +712,213 @@
     .hero-title { font-size: 28px; }
     .footer-bar { padding: 14px 20px; }
   }
+
+  /* ── Auth overlay ── */
+  #auth-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--gray-100);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .auth-wrap {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+  }
+
+  .auth-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 40px;
+    box-shadow: 0 4px 32px rgba(0,0,0,.06);
+  }
+
+  .auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .auth-logo-text {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .auth-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--black);
+    letter-spacing: -.02em;
+    margin-bottom: 6px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 32px;
+    line-height: 1.5;
+  }
+
+  .auth-field { margin-bottom: 16px; }
+
+  .auth-field-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .auth-input {
+    width: 100%;
+    height: 46px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 0 14px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: var(--black);
+    background: var(--gray-100);
+    outline: none;
+    transition: border-color .15s, background .15s;
+  }
+
+  .auth-input:focus { border-color: var(--red); background: var(--white); }
+
+  .auth-btn {
+    width: 100%;
+    height: 48px;
+    margin-top: 24px;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    transition: background .15s;
+  }
+
+  .auth-btn:hover:not(:disabled) { background: var(--red-dark); }
+  .auth-btn:disabled { opacity: .45; cursor: default; }
+
+  .auth-error {
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 500;
+    min-height: 18px;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  /* ── Topbar right ── */
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-zone {
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-zone.visible { display: flex; }
+
+  .user-email {
+    font-size: 12px;
+    color: var(--gray-400);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .logout-btn {
+    padding: 5px 12px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: var(--radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-400);
+    cursor: pointer;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    transition: all .15s;
+  }
+
+  .logout-btn:hover { border-color: rgba(238,34,43,.6); color: var(--red); }
+
+  @media (max-width: 500px) { .user-email { display: none; } }
 </style>
 </head>
 <body>
+
+<!-- Auth overlay -->
+<div id="auth-overlay">
+
+  <!-- Login screen -->
+  <div id="login-screen" style="display:none" class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="4" fill="#EE222B"/><text x="16" y="22" font-family="'Roboto', sans-serif" font-size="18" font-weight="900" fill="white" text-anchor="middle">C</text></svg>
+        <span class="auth-logo-text">Cia de Talentos</span>
+      </div>
+      <h2 class="auth-title">Entrar</h2>
+      <p class="auth-subtitle">Acesso interno — Gerador de Assessments</p>
+      <div class="auth-field">
+        <label class="auth-field-label" for="login-email">E-mail</label>
+        <input class="auth-input" type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label class="auth-field-label" for="login-password">Senha</label>
+        <input class="auth-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="auth-btn" id="login-btn">Entrar</button>
+      <div class="auth-error" id="login-error"></div>
+    </div>
+  </div>
+
+  <!-- Change password screen (primeiro acesso) -->
+  <div id="change-pw-screen" style="display:none" class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="4" fill="#EE222B"/><text x="16" y="22" font-family="'Roboto', sans-serif" font-size="18" font-weight="900" fill="white" text-anchor="middle">C</text></svg>
+        <span class="auth-logo-text">Cia de Talentos</span>
+      </div>
+      <h2 class="auth-title">Crie sua senha</h2>
+      <p class="auth-subtitle">Primeiro acesso detectado. Defina uma senha permanente para sua conta.</p>
+      <div class="auth-field">
+        <label class="auth-field-label" for="new-password">Nova senha</label>
+        <input class="auth-input" type="password" id="new-password" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
+      </div>
+      <div class="auth-field">
+        <label class="auth-field-label" for="confirm-password">Confirmar senha</label>
+        <input class="auth-input" type="password" id="confirm-password" placeholder="Repita a nova senha" autocomplete="new-password">
+      </div>
+      <button class="auth-btn" id="save-pw-btn">Salvar senha</button>
+      <div class="auth-error" id="change-pw-error"></div>
+    </div>
+  </div>
+
+</div>
 
 <!-- Top bar -->
 <div class="topbar">
@@ -726,10 +930,15 @@
     <span class="ct-logo-text">Cia de Talentos</span>
   </div>
 
-  <!-- Language switcher -->
-  <div class="lang-switcher" role="group" aria-label="Idioma da interface">
-    <button class="lang-btn active" id="lang-pt" onclick="setLang('pt')">PT-BR</button>
-    <button class="lang-btn" id="lang-es" onclick="setLang('es')">ES</button>
+  <div class="topbar-right">
+    <div class="user-zone" id="user-zone">
+      <span class="user-email" id="user-email-display"></span>
+      <button class="logout-btn" id="logout-btn">Sair</button>
+    </div>
+    <div class="lang-switcher" role="group" aria-label="Idioma da interface">
+      <button class="lang-btn active" id="lang-pt" onclick="setLang('pt')">PT-BR</button>
+      <button class="lang-btn" id="lang-es" onclick="setLang('es')">ES</button>
+    </div>
   </div>
 </div>
 
@@ -1265,6 +1474,167 @@
 
   // Init Talkia
   renderTalkia(currentLang);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ── Auth ─────────────────────────────────────────────────────────────────────
+let _sb = null;
+
+async function initAuth() {
+  let config = {};
+  try {
+    const r = await fetch('/api/config');
+    config = await r.json();
+  } catch { /* servidor indisponível */ }
+
+  // Se Supabase não está configurado, libera acesso (modo legado)
+  if (!config.supabase_url) {
+    hideOverlay();
+    return;
+  }
+
+  _sb = window.supabase.createClient(config.supabase_url, config.supabase_anon_key);
+
+  // Verifica hub token (acesso via hub corporativo)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('hub_token')) {
+    const redirecting = await tryHubLogin(params);
+    if (redirecting) return;
+  }
+
+  // Escuta mudanças de auth (também captura magic link de retorno do hub)
+  _sb.auth.onAuthStateChange(async (event, session) => {
+    if (session) {
+      await onAuthenticated(session.user);
+    } else if (event === 'INITIAL_SESSION') {
+      showLoginScreen();
+    }
+  });
+}
+
+async function tryHubLogin(params) {
+  try {
+    const r = await fetch('/api/auth/hub-login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        token: params.get('hub_token'),
+        email: params.get('hub_email'),
+        ts:    params.get('hub_ts')
+      })
+    });
+    const data = await r.json();
+    if (data.magic_link) {
+      window.location.href = data.magic_link;
+      return true;
+    }
+  } catch { /* falha silenciosa, cai no login normal */ }
+  return false;
+}
+
+async function onAuthenticated(user) {
+  // Limpa parâmetros do hub ou hash do magic link da URL
+  if (window.location.search.includes('hub_token') || window.location.hash.includes('access_token')) {
+    history.replaceState({}, '', window.location.pathname);
+  }
+
+  if (user.user_metadata?.must_change_password) {
+    showChangePwScreen();
+  } else {
+    showApp(user);
+  }
+}
+
+function showApp(user) {
+  hideOverlay();
+  const zone = document.getElementById('user-zone');
+  zone.classList.add('visible');
+  document.getElementById('user-email-display').textContent = user.email;
+}
+
+function hideOverlay() {
+  document.getElementById('auth-overlay').style.display = 'none';
+}
+
+function showLoginScreen(errorMsg) {
+  document.getElementById('auth-overlay').style.display = 'flex';
+  document.getElementById('login-screen').style.display = '';
+  document.getElementById('change-pw-screen').style.display = 'none';
+  if (errorMsg) document.getElementById('login-error').textContent = errorMsg;
+}
+
+function showChangePwScreen() {
+  document.getElementById('auth-overlay').style.display = 'flex';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('change-pw-screen').style.display = '';
+}
+
+// Login
+document.getElementById('login-btn').addEventListener('click', async () => {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errorEl  = document.getElementById('login-error');
+  const btn      = document.getElementById('login-btn');
+
+  if (!email || !password) { errorEl.textContent = 'Preencha e-mail e senha.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Entrando…';
+  errorEl.textContent = '';
+
+  const { error } = await _sb.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errorEl.textContent = error.message === 'Invalid login credentials'
+      ? 'E-mail ou senha incorretos.'
+      : error.message;
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+  // onAuthStateChange cuida do sucesso
+});
+
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+
+// Criar nova senha (primeiro acesso)
+document.getElementById('save-pw-btn').addEventListener('click', async () => {
+  const newPw     = document.getElementById('new-password').value;
+  const confirmPw = document.getElementById('confirm-password').value;
+  const errorEl   = document.getElementById('change-pw-error');
+  const btn       = document.getElementById('save-pw-btn');
+
+  if (newPw.length < 8) { errorEl.textContent = 'A senha deve ter no mínimo 8 caracteres.'; return; }
+  if (newPw !== confirmPw) { errorEl.textContent = 'As senhas não coincidem.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
+  errorEl.textContent = '';
+
+  const { error } = await _sb.auth.updateUser({
+    password: newPw,
+    data: { must_change_password: false }
+  });
+
+  if (error) {
+    errorEl.textContent = error.message;
+    btn.disabled = false;
+    btn.textContent = 'Salvar senha';
+  } else {
+    const { data: { user } } = await _sb.auth.getUser();
+    showApp(user);
+  }
+});
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await _sb.auth.signOut();
+  document.getElementById('user-zone').classList.remove('visible');
+});
+
+initAuth();
 </script>
 </body>
 </html>
