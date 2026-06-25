@@ -1490,6 +1490,7 @@
 <script>
 // ── Auth ─────────────────────────────────────────────────────────────────────
 let _sb = null;
+let _config = {};
 
 async function initAuth() {
   showLoginScreen();
@@ -1508,6 +1509,7 @@ async function initAuth() {
     return;
   }
 
+  _config = config;
   _sb = window.supabase.createClient(config.supabase_url, config.supabase_anon_key, { auth: { persistSession: false } });
 
   _sb.auth.onAuthStateChange(async (event, session) => {
@@ -1535,10 +1537,14 @@ async function onAuthenticated(user) {
 let _currentUser = null;
 
 function logEvent(eventType, eventData) {
-  if (!_currentUser) return;
-  fetch('/api/log', {
+  if (!_currentUser || !_config.supabase_url) return;
+  fetch(_config.supabase_url + '/rest/v1/panel_access_logs', {
     method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey':       _config.supabase_anon_key,
+      'Prefer':       'return=minimal'
+    },
     body: JSON.stringify({
       user_email: _currentUser.email,
       panel_name: 'Gerador de Assessments',
@@ -1547,7 +1553,8 @@ function logEvent(eventType, eventData) {
       event_type: eventType,
       event_data: eventData
     })
-  }).catch(e => console.error('[logEvent]', e));
+  }).then(r => { if(!r.ok) r.text().then(t => console.error('[logEvent]', t)); })
+    .catch(e => console.error('[logEvent]', e));
 }
 
 function showApp(user) {
