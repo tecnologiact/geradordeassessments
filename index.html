@@ -1383,10 +1383,7 @@
     }
   });
   function logGeneration(label) {
-    if (!_sb || !_currentUser) return;
-    _sb.from('link_generations').insert({
-      user_id:          _currentUser.id,
-      user_email:       _currentUser.email,
+    logEvent('generate_links', {
       assessment_key:   selectedAssessment.key,
       assessment_label: label,
       provider:         selectedAssessment.provider,
@@ -1537,12 +1534,25 @@ async function onAuthenticated(user) {
 
 let _currentUser = null;
 
+function logEvent(eventType, eventData) {
+  if (!_sb || !_currentUser) return;
+  _sb.from('panel_access_logs').insert({
+    user_email: _currentUser.email,
+    panel_name: 'Gerador de Assessments',
+    panel_url:  window.location.href,
+    user_agent: navigator.userAgent,
+    event_type: eventType,
+    event_data: eventData
+  });
+}
+
 function showApp(user) {
   _currentUser = user;
   hideOverlay();
   const zone = document.getElementById('user-zone');
   zone.classList.add('visible');
   document.getElementById('user-email-display').textContent = user.email;
+  logEvent('login', {});
 }
 
 function hideOverlay() {
