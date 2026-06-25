@@ -1535,15 +1535,19 @@ async function onAuthenticated(user) {
 let _currentUser = null;
 
 function logEvent(eventType, eventData) {
-  if (!_sb || !_currentUser) return;
-  _sb.from('panel_access_logs').insert({
-    user_email: _currentUser.email,
-    panel_name: 'Gerador de Assessments',
-    panel_url:  window.location.href,
-    user_agent: navigator.userAgent,
-    event_type: eventType,
-    event_data: eventData
-  });
+  if (!_currentUser) return;
+  fetch('/api/log', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_email: _currentUser.email,
+      panel_name: 'Gerador de Assessments',
+      panel_url:  window.location.href,
+      user_agent: navigator.userAgent,
+      event_type: eventType,
+      event_data: eventData
+    })
+  }).catch(e => console.error('[logEvent]', e));
 }
 
 function showApp(user) {
