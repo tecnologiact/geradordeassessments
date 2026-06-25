@@ -1508,7 +1508,7 @@ async function initAuth() {
     return;
   }
 
-  _sb = window.supabase.createClient(config.supabase_url, config.supabase_anon_key);
+  _sb = window.supabase.createClient(config.supabase_url, config.supabase_anon_key, { auth: { persistSession: false } });
 
   _sb.auth.onAuthStateChange(async (event, session) => {
     if (session) {
