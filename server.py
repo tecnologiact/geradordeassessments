@@ -51,17 +51,32 @@ def get_links():
         resp.raise_for_status()
         data = resp.json()
 
+        # A API pode devolver uma lista direto ou um objeto envelopando a lista
+        # (ex: {"links": [...]}, {"data": [...]}, {"urls": [...]}).
+        if isinstance(data, dict):
+            for wrapper_key in ('links', 'data', 'urls', 'executions', 'items', 'results'):
+                if isinstance(data.get(wrapper_key), list):
+                    data = data[wrapper_key]
+                    break
+
+        if not isinstance(data, list):
+            raise ValueError(f'Formato de resposta inesperado da API: {data!r}')
+
         if data and isinstance(data[0], dict):
-            links = [item['url'] for item in data]
+            links = [item.get('url') or item.get('link') or item.get('deepLink') for item in data]
         else:
             links = data
+
+        if not links or any(link is None for link in links):
+            raise ValueError(f'Não foi possível extrair os links da resposta: {data!r}')
 
         return jsonify({'links': links})
 
     except requests.exceptions.Timeout:
         return jsonify({'error': 'Timeout ao contatar a API'}), 504
     except requests.exceptions.RequestException as e:
-        return jsonify({'error': f'Erro na requisição: {str(e)}'}), 502
+        body = getattr(e.response, 'text', '')
+        return jsonify({'error': f'Erro na requisição: {str(e)}' + (f' — resposta: {body}' if body else '')}), 502
     except Exception as e:
         return jsonify({'error': f'Erro interno: {str(e)}'}), 500
 
